@@ -42,4 +42,113 @@
     -webkit-text-stroke: 1px rgba(253, 246, 236, 0.25);
     color: transparent;
   }
+
+  /* Floating hero visual: no card, no frame — the video screen-blends
+     into a stand-in backdrop so its black frame disappears */
+  .hero-visual {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    margin-inline: auto;
+    transition: transform 0.6s ease;
+  }
+
+  /* Matches bg-charcoal-900. The video's screen blend composites against
+     its own stacking context, which can't see the section background —
+     this layer stands in for it so black video pixels resolve to the
+     page color and the frame edge vanishes. */
+  .hero-visual-backdrop {
+    position: absolute;
+    inset: 0;
+    background: #141110;
+    /* Feather this layer's edges so it never reads as a patch against the
+       section's grain and ambient tints. The fade zones sit entirely
+       outside the video's own opaque area (the video feathers its outer
+       8% too, and it never fills more than ~64% of this box's height),
+       so the blend always happens over solid backdrop. */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent),
+      linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent),
+      linear-gradient(to bottom, transparent, black 18%, black 82%, transparent);
+    mask-composite: intersect;
+  }
+
+  /* Warm ambient light behind the burger; shines through the video's
+     dark background thanks to the screen blend */
+  .hero-glow {
+    position: absolute;
+    width: 650px;
+    height: 650px;
+    background:
+      radial-gradient(circle at 50% 45%, rgba(255, 120, 0, 0.22), transparent 40%),
+      radial-gradient(circle at 55% 50%, rgba(255, 170, 80, 0.1), transparent 70%);
+    filter: blur(50px);
+    opacity: 0.8;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+
+  .hero-video {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    display: block;
+    background: transparent;
+    /* Screen blend: black frame pixels resolve to the backdrop color and
+       disappear. The contrast crush pushes the clip's compression-noise
+       near-blacks to true black so no faint rectangle survives the blend.
+       Drop-shadows are deliberately omitted — a filter's rectangular halo
+       would re-outline the frame we just erased. */
+    mix-blend-mode: screen;
+    filter: contrast(1.22) brightness(1.02);
+    /* Feather the outer 8% of the frame so bright content (smoke, bokeh)
+       dissolves at the boundary instead of cutting off in a hard line */
+    -webkit-mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent),
+      linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+    -webkit-mask-composite: source-in;
+    mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent),
+      linear-gradient(to bottom, transparent, black 8%, black 92%, transparent);
+    mask-composite: intersect;
+    pointer-events: none;
+    user-select: none;
+    animation: hero-float 6s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  @media (min-width: 640px) {
+    .hero-visual {
+      max-width: 420px;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .hero-visual {
+      max-width: 560px;
+    }
+  }
+
+  /* Desktop-only hover: gentle lift and slightly brighter glow */
+  @media (hover: hover) and (pointer: fine) {
+    .hero-visual:hover {
+      transform: scale(1.03);
+    }
+
+    .hero-visual:hover .hero-glow {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes hero-float {
+  0%,
+  100% {
+    transform: translateY(-10px);
+  }
+  50% {
+    transform: translateY(10px);
+  }
 }

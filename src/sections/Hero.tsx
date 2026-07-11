@@ -1,9 +1,6 @@
-import { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 
-// Lazy-load the 3D scene so Three.js lands in its own chunk and doesn't
-// block first paint of the page copy.
-const Burger3D = lazy(() => import('../components/Burger3D'));
+import HeroVideo from '../components/HeroVideo';
 import StarRating from '../components/StarRating';
 import { restaurant } from '../data/restaurant';
 
@@ -13,13 +10,14 @@ export default function Hero() {
       id="home"
       className="grain relative flex min-h-dvh items-center overflow-hidden bg-charcoal-900"
     >
-      {/* Warm radial glow behind the 3D model */}
+      {/* Ambient accent glows; the main orange glow lives inside the
+          hero visual so it tracks the video and blends through it */}
       <div
         className="pointer-events-none absolute inset-0"
         aria-hidden="true"
         style={{
           background:
-            'radial-gradient(ellipse 60% 50% at 70% 45%, rgba(249,115,22,0.18), transparent 70%), radial-gradient(ellipse 40% 40% at 20% 80%, rgba(239,68,68,0.10), transparent 70%)',
+            'radial-gradient(ellipse 40% 40% at 20% 80%, rgba(239,68,68,0.10), transparent 70%)',
         }}
       />
 
@@ -86,16 +84,14 @@ export default function Hero() {
           </p>
         </motion.div>
 
-        {/* 3D model */}
+        {/* Hero video */}
         <motion.div
-          className="h-[340px] sm:h-[420px] lg:h-[560px]"
-          initial={{ opacity: 0, scale: 0.85 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0.2, ease: 'easeOut' }}
+          className="flex h-[340px] items-center justify-center sm:h-[420px] lg:h-[560px]"
+          initial={{ opacity: 0, scale: 0.95, y: 40 }}
+          animate={{ opacity: 1, scale: 1, y: 0 }}
+          transition={{ duration: 0.9, delay: 0.2, ease: 'easeOut' }}
         >
-          <Suspense fallback={null}>
-            <Burger3D />
-          </Suspense>
+          <HeroVideo />
         </motion.div>
       </div>
     </section>
